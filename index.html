@@ -74,6 +74,7 @@
 </style>
 </head>
 <body>
+<audio id="yesSong" src="song.mp3" preload="auto" loop></audio>
 <main class="page">
   <div class="ambient"></div><div class="spotlight one"></div><div class="spotlight two"></div><div class="grain"></div>
   <section class="card playing" id="card" aria-label="Concert date invitation">
@@ -154,8 +155,17 @@
     cancelAnimationFrame(raf); sequence.classList.remove('show'); final.classList.add('show'); timer.textContent='♡';
   });
   document.getElementById('replayBtn').addEventListener('click', play);
-  document.getElementById('yesBtn').addEventListener('click', () => {
+  const yesSong = document.getElementById('yesSong');
+  yesSong.volume = 0.8;
+  document.getElementById('yesBtn').addEventListener('click', async () => {
     message.textContent = 'You just made this concert a lot more special. ♡';
+    try {
+      yesSong.currentTime = 0;
+      await yesSong.play();
+      message.textContent = 'It’s a date! ♡ Enjoy the song.';
+    } catch (err) {
+      message.textContent = 'It’s a date! ♡ Tap again if the music didn’t start.';
+    }
   });
   document.getElementById('maybeBtn').addEventListener('click', () => {
     message.textContent = 'No pressure — I just wanted to ask you. ♡';
