@@ -74,7 +74,8 @@
 </style>
 </head>
 <body>
-<audio id="yesSong" src="song.mp3" preload="auto" loop></audio>
+<audio id="momentSong" src="moment-song.mp3" preload="auto" loop></audio>
+<audio id="yesSong" src="yes-song.mp3" preload="auto" loop></audio>
 <main class="page">
   <div class="ambient"></div><div class="spotlight one"></div><div class="spotlight two"></div><div class="grain"></div>
   <section class="card playing" id="card" aria-label="Concert date invitation">
@@ -111,7 +112,6 @@
         <button class="secondary" id="maybeBtn">Let me think ✨</button>
       </div>
       <div class="yes-message" id="message" role="status"></div>
-      <button class="secondary" id="replayBtn" style="margin-top:8px">↻ Replay the 15 seconds</button>
     </div>
   </section>
 </main>
@@ -150,15 +150,37 @@
     if (reduced) { sequence.classList.add('show'); final.classList.add('show'); timer.textContent='00:00'; }
     else raf = requestAnimationFrame(frame);
   }
-  document.getElementById('startBtn').addEventListener('click', play);
-  document.getElementById('skipBtn').addEventListener('click', () => {
-    cancelAnimationFrame(raf); sequence.classList.remove('show'); final.classList.add('show'); timer.textContent='♡';
-  });
-  document.getElementById('replayBtn').addEventListener('click', play);
+  const momentSong = document.getElementById('momentSong');
   const yesSong = document.getElementById('yesSong');
+  momentSong.volume = 0.8;
   yesSong.volume = 0.8;
+
+  async function startMomentSong() {
+    // The cover is the soundtrack for the 15-second invitation.
+    yesSong.pause();
+    yesSong.currentTime = 0;
+    momentSong.currentTime = 0;
+    try { await momentSong.play(); } catch (err) {
+      message.textContent = 'Tap “Play the moment” again if the music didn’t start.';
+    }
+  }
+
+  document.getElementById('startBtn').addEventListener('click', async () => {
+    play();
+    await startMomentSong();
+  });
+  document.getElementById('skipBtn').addEventListener('click', () => {
+    cancelAnimationFrame(raf);
+    sequence.classList.remove('show');
+    final.classList.add('show');
+    timer.textContent='♡';
+  });
+
   document.getElementById('yesBtn').addEventListener('click', async () => {
     message.textContent = 'You just made this concert a lot more special. ♡';
+    // Switch from the instrumental cover to the original song.
+    momentSong.pause();
+    momentSong.currentTime = 0;
     try {
       yesSong.currentTime = 0;
       await yesSong.play();
