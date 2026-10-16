@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#08050d">
+<title>A Date With You — Silent Sanctuary</title>
+<style>
+  :root { --pink:#ff4f91; --red:#ff3157; --cream:#fff2e9; --night:#08050d; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; min-height:100%; background:var(--night); color:var(--cream); font-family:Arial,Helvetica,sans-serif; }
+  body { overflow-x:hidden; }
+  .page { min-height:100svh; display:grid; place-items:center; padding:24px 14px; position:relative; isolation:isolate; overflow:hidden; }
+  .ambient { position:absolute; inset:-20%; z-index:-3; background:radial-gradient(ellipse at 50% 45%,#4b102d 0%,#170b21 35%,#08050d 70%); animation:ambient 9s ease-in-out infinite alternate; }
+  .grain { position:absolute; inset:0; pointer-events:none; z-index:5; opacity:.09; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E"); }
+  .spotlight { position:absolute; z-index:-1; width:50vw; height:120vh; top:-25vh; opacity:.16; filter:blur(30px); transform-origin:top center; background:linear-gradient(180deg,#ff3d83,transparent 75%); clip-path:polygon(44% 0,56% 0,100% 100%,0 100%); animation:spot 7s ease-in-out infinite alternate; }
+  .spotlight.one { left:8%; transform:rotate(-19deg); }
+  .spotlight.two { right:8%; background:linear-gradient(180deg,#9c67ff,transparent 75%); transform:rotate(19deg); animation-delay:-3s; }
+  .card { width:min(100%,760px); min-height:min(720px,88svh); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; position:relative; padding:clamp(24px,6vw,54px) 18px; border:1px solid #ffffff20; border-radius:28px; background:linear-gradient(150deg,#ffffff0b,#ffffff02 55%,#ff4f9110); box-shadow:0 30px 100px #0008,inset 0 0 45px #ff4f9108; overflow:hidden; }
+  .topline { letter-spacing:.28em; text-transform:uppercase; color:#f6bfd3; font-size:10px; font-weight:700; margin-bottom:25px; opacity:.8; }
+  .visual { height:clamp(145px,24vw,210px); width:100%; display:grid; place-items:center; perspective:800px; position:relative; margin-bottom:10px; }
+  .orb { width:clamp(105px,20vw,155px); aspect-ratio:1; border-radius:42% 58% 64% 36% / 43% 39% 61% 57%; position:absolute; background:radial-gradient(circle at 30% 25%,#ffd0e3 0,#ff5a9b 15%,#b71e6b 42%,#471039 72%,#16091e 100%); box-shadow:inset -15px -20px 30px #08050d88, inset 7px 8px 18px #ffffff55,0 0 40px #ff2f8770; animation:morph 5s ease-in-out infinite, float 4s ease-in-out infinite; }
+  .ring { position:absolute; width:clamp(145px,27vw,220px); aspect-ratio:1; border:1px solid #ff8dbb88; border-radius:50%; transform:rotateX(68deg) rotateZ(-22deg); box-shadow:0 0 20px #ff4f9122; animation:spin 9s linear infinite; }
+  .ring.r2 { width:clamp(165px,31vw,250px); transform:rotateX(70deg) rotateZ(40deg); border-color:#c7a0ff66; animation-direction:reverse; animation-duration:12s; }
+  .spark { position:absolute; width:4px;height:4px;border-radius:50%; background:#fff5f9; box-shadow:0 0 15px 4px #ff80b7; animation:twinkle 2s infinite alternate; }
+  .s1{top:20%;left:25%}.s2{top:70%;right:22%;animation-delay:.7s}.s3{top:10%;right:31%;animation-delay:1.2s}
+  .eyebrow { font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:#ff8dbb; margin:14px 0 12px; font-weight:700; }
+  h1 { margin:0; font-size:clamp(42px,10vw,86px); line-height:.88; letter-spacing:-.075em; font-weight:900; text-transform:uppercase; text-wrap:balance; }
+  h1 .line { display:block; overflow:hidden; padding:.07em .04em .12em; }
+  h1 .word { display:inline-block; animation:reveal .85s cubic-bezier(.16,1,.3,1) both; }
+  h1 .line:nth-child(2) .word { animation-delay:.16s; color:transparent; -webkit-text-stroke:1px #ffd2e3; }
+  .subtitle { max-width:440px; margin:20px auto 0; color:#d9c7d6; font-size:clamp(13px,2.8vw,16px); line-height:1.7; }
+  .concert { margin-top:23px; display:flex; align-items:center; gap:9px; justify-content:center; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#ffb3d0; }
+  .concert:before,.concert:after { content:""; width:24px; height:1px; background:#ff6ea6; opacity:.7; }
+  .actions { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:12px; margin-top:28px; }
+  button { font:inherit; cursor:pointer; border:0; border-radius:999px; padding:14px 22px; font-size:12px; letter-spacing:.08em; text-transform:uppercase; font-weight:800; transition:transform .2s,box-shadow .2s,background .2s; }
+  button:hover { transform:translateY(-2px); }
+  .primary { color:#210817; background:linear-gradient(100deg,#ffc1da,#ff4f91); box-shadow:0 8px 30px #ff4f9140; }
+  .secondary { color:#f8dce8; border:1px solid #ffffff30; background:#ffffff08; }
+  .foot { margin-top:24px; color:#9c8297; font-size:10px; letter-spacing:.14em; text-transform:uppercase; }
+  .progress { width:min(240px,65%); height:2px; background:#ffffff20; border-radius:10px; margin-top:25px; overflow:hidden; }
+  .progress span { display:block; height:100%; width:0; background:linear-gradient(90deg,#ff4f91,#e6c4ff); }
+  .playing .progress span { animation:progress 15s linear forwards; }
+  .sequence { position:absolute; inset:0; display:grid; place-items:center; padding:22px; background:#08050df2; opacity:0; visibility:hidden; transition:opacity .7s ease; z-index:3; }
+  .sequence.show { opacity:1; visibility:visible; }
+  .sequence-inner { max-width:650px; }
+  .seq-label { color:#ff8dbb; letter-spacing:.3em; font-size:10px; text-transform:uppercase; margin-bottom:22px; }
+  .seq-big { font-weight:950; text-transform:uppercase; letter-spacing:-.07em; font-size:clamp(40px,10vw,88px); line-height:.9; }
+  .seq-big span { display:block; animation:seqin .75s cubic-bezier(.16,1,.3,1) both; }
+  .seq-big span:nth-child(2){animation-delay:.13s;color:transparent;-webkit-text-stroke:1px #ff9ac0}
+  .seq-copy { font-size:clamp(13px,3vw,16px); line-height:1.7; color:#d9c7d6; margin:20px auto 0; max-width:390px; }
+  .final { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:25px; background:radial-gradient(ellipse at center,#4a1236 0%,#120918 65%,#08050d 100%); opacity:0; visibility:hidden; transition:opacity .8s ease; z-index:4; }
+  .final.show { opacity:1; visibility:visible; }
+  .heart { font-size:clamp(40px,9vw,70px); filter:drop-shadow(0 0 20px #ff4f91); animation:heartbeat 1.2s infinite; margin-bottom:20px; }
+  .final h2 { margin:0; font-size:clamp(34px,8vw,70px); line-height:.95; letter-spacing:-.065em; text-transform:uppercase; font-weight:950; }
+  .final h2 span { display:block; color:#ff85b5; }
+  .final p { max-width:390px; color:#ead7e4; line-height:1.7; font-size:14px; margin:19px auto 0; }
+  .final .actions { margin-top:24px; }
+  .yes-message { margin-top:16px; min-height:20px; color:#ffb6d2; font-size:13px; }
+  .timer { position:absolute; top:18px; right:20px; color:#bfa6ba; font-size:10px; letter-spacing:.14em; }
+  .hide { display:none !important; }
+  @keyframes ambient { from{transform:scale(1) rotate(0)}to{transform:scale(1.15) rotate(5deg)} }
+  @keyframes spot { from{opacity:.08;rotate:-8deg}to{opacity:.22;rotate:8deg} }
+  @keyframes morph { 0%,100%{border-radius:42% 58% 64% 36% / 43% 39% 61% 57%;transform:rotateY(-15deg) rotateZ(-8deg)} 50%{border-radius:61% 39% 37% 63% / 55% 62% 38% 45%;transform:rotateY(18deg) rotateZ(12deg)} }
+  @keyframes float { 0%,100%{translate:0 0}50%{translate:0 -10px} }
+  @keyframes spin { to{transform:rotateX(68deg) rotateZ(338deg)} }
+  @keyframes twinkle { from{opacity:.25;scale:.7}to{opacity:1;scale:1.4} }
+  @keyframes reveal { from{transform:translateY(110%) skewY(8deg);opacity:0;filter:blur(8px)}to{transform:translateY(0) skewY(0);opacity:1;filter:blur(0)} }
+  @keyframes seqin { from{transform:translateY(45px) scale(.92);opacity:0;filter:blur(9px)}to{transform:translateY(0) scale(1);opacity:1;filter:blur(0)} }
+  @keyframes progress { to{width:100%} }
+  @keyframes heartbeat { 0%,100%{transform:scale(1)}12%{transform:scale(1.12)}24%{transform:scale(1)}36%{transform:scale(1.08)} }
+  @media(max-width:480px){.card{min-height:84svh;border-radius:22px}.topline{margin-bottom:10px}.visual{margin-bottom:0}.subtitle{max-width:310px}.concert{font-size:9px}.actions button{padding:13px 16px;font-size:10px}}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<main class="page">
+  <div class="ambient"></div><div class="spotlight one"></div><div class="spotlight two"></div><div class="grain"></div>
+  <section class="card playing" id="card" aria-label="Concert date invitation">
+    <div class="timer" id="timer">00:15</div>
+    <div class="topline">a little question, just for you</div>
+    <div class="visual" aria-hidden="true">
+      <div class="ring"></div><div class="ring r2"></div><div class="orb"></div>
+      <i class="spark s1"></i><i class="spark s2"></i><i class="spark s3"></i>
+    </div>
+    <div class="eyebrow">one night · one song · you & me</div>
+    <h1><span class="line"><span class="word">Somewhere</span></span><span class="line"><span class="word">in the music</span></span></h1>
+    <p class="subtitle">There’s a concert coming up… and there’s only one person I’d rather be there with.</p>
+    <div class="concert">Silent Sanctuary</div>
+    <div class="actions">
+      <button class="primary" id="startBtn">Play the moment ✦</button>
+      <button class="secondary" id="skipBtn">Skip to the question</button>
+    </div>
+    <div class="progress"><span id="progressBar"></span></div>
+    <div class="foot">made with a little courage ♡</div>
+    <div class="sequence" id="sequence" aria-hidden="true">
+      <div class="sequence-inner">
+        <div class="seq-label">if the night had a soundtrack…</div>
+        <div class="seq-big"><span>I'd choose</span><span>you.</span></div>
+        <p class="seq-copy">The lights, the crowd, the songs we’ll remember. It would all mean a little more with you beside me.</p>
+      </div>
+    </div>
+    <div class="final" id="final">
+      <div class="heart">♡</div>
+      <div class="seq-label">okay, here's the real question</div>
+      <h2>Will you be <span>my date?</span></h2>
+      <p>For the upcoming <strong>Silent Sanctuary concert</strong> — just you, me, and the music. 🎶</p>
+      <div class="actions">
+        <button class="primary" id="yesBtn">Yes, let's go! ♡</button>
+        <button class="secondary" id="maybeBtn">Let me think ✨</button>
+      </div>
+      <div class="yes-message" id="message" role="status"></div>
+      <button class="secondary" id="replayBtn" style="margin-top:8px">↻ Replay the 15 seconds</button>
+    </div>
+  </section>
+</main>
+<script>
+(() => {
+  const card = document.getElementById('card');
+  const sequence = document.getElementById('sequence');
+  const final = document.getElementById('final');
+  const timer = document.getElementById('timer');
+  const message = document.getElementById('message');
+  let startAt, raf, stage = 0;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function frame(now) {
+    if (!startAt) startAt = now;
+    const elapsed = (now - startAt) / 1000;
+    const left = Math.max(0, 15 - elapsed);
+    timer.textContent = `00:${String(Math.ceil(left)).padStart(2,'0')}`;
+    if (elapsed >= 5 && stage < 1) {
+      stage = 1; sequence.classList.add('show'); sequence.setAttribute('aria-hidden','false');
+    }
+    if (elapsed >= 10 && stage < 2) {
+      stage = 2; sequence.classList.remove('show'); sequence.setAttribute('aria-hidden','true'); final.classList.add('show');
+    }
+    if (elapsed < 15) raf = requestAnimationFrame(frame);
+    else timer.textContent = '00:00';
+  }
+  function play() {
+    cancelAnimationFrame(raf);
+    startAt = null; stage = 0;
+    sequence.classList.remove('show'); sequence.setAttribute('aria-hidden','true');
+    final.classList.remove('show'); message.textContent = '';
+    card.classList.remove('playing');
+    void card.offsetWidth;
+    card.classList.add('playing');
+    if (reduced) { sequence.classList.add('show'); final.classList.add('show'); timer.textContent='00:00'; }
+    else raf = requestAnimationFrame(frame);
+  }
+  document.getElementById('startBtn').addEventListener('click', play);
+  document.getElementById('skipBtn').addEventListener('click', () => {
+    cancelAnimationFrame(raf); sequence.classList.remove('show'); final.classList.add('show'); timer.textContent='♡';
+  });
+  document.getElementById('replayBtn').addEventListener('click', play);
+  document.getElementById('yesBtn').addEventListener('click', () => {
+    message.textContent = 'You just made this concert a lot more special. ♡';
+  });
+  document.getElementById('maybeBtn').addEventListener('click', () => {
+    message.textContent = 'No pressure — I just wanted to ask you. ♡';
+  });
+  // Begin the cinematic sequence automatically.
+  window.addEventListener('load', () => {
+    if (reduced) return;
+    raf = requestAnimationFrame(frame);
+  });
+})();
+</script>
+</body>
+</html>
